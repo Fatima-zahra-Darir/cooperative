@@ -39,7 +39,10 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
     // ONCA Documents
-    Route::get('/onca', [OncaController::class, 'index'])->name('onca.index');
+    // ONCA Documents
+    Route::get('/onca/create/{type}', [OncaController::class, 'createForm'])->name('onca.create-form');
+    Route::get('/onca/{onca}/print', [OncaController::class, 'print'])->name('onca.print');
+    Route::resource('onca', OncaController::class);
 
     // Archives
     Route::get('/archives', [ArchiveController::class, 'index'])->name('archives.index');
