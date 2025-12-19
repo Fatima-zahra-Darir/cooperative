@@ -13,6 +13,8 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\SizeController;
+use App\Http\Controllers\StockProduitController;
+use App\Http\Controllers\StockCapsuleController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -25,6 +27,8 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
 
     // Stock Management
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+    Route::resource('stock-produit', StockProduitController::class);
+    Route::resource('stock-capsules', StockCapsuleController::class);
 
     // Products
     Route::resource('products', ProductController::class);
