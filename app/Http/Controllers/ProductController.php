@@ -8,7 +8,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = \App\Models\Product::with(['category', 'color', 'size'])->get();
+        $products = \App\Models\Product::with(['categories', 'colors', 'sizes'])->get();
         return view('products.index', compact('products'));
     }
 
@@ -24,12 +24,19 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'color_id' => 'required|exists:colors,id',
-            'size_id' => 'required|exists:sizes,id',
+            'categories' => 'required|array',
+            'categories.*' => 'exists:categories,id',
+            'colors' => 'required|array',
+            'colors.*' => 'exists:colors,id',
+            'sizes' => 'required|array',
+            'sizes.*' => 'exists:sizes,id',
         ]);
 
-        \App\Models\Product::create($request->all());
+        $product = \App\Models\Product::create($request->only('name'));
+        $product->categories()->sync($request->categories);
+        $product->colors()->sync($request->colors);
+        $product->sizes()->sync($request->sizes);
+
         return redirect()->route('products.index')->with('success', 'Produit créé avec succès.');
     }
 
@@ -47,12 +54,19 @@ class ProductController extends Controller
         $product = \App\Models\Product::findOrFail($id);
         $request->validate([
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'color_id' => 'required|exists:colors,id',
-            'size_id' => 'required|exists:sizes,id',
+            'categories' => 'required|array',
+            'categories.*' => 'exists:categories,id',
+            'colors' => 'required|array',
+            'colors.*' => 'exists:colors,id',
+            'sizes' => 'required|array',
+            'sizes.*' => 'exists:sizes,id',
         ]);
 
-        $product->update($request->all());
+        $product->update($request->only('name'));
+        $product->categories()->sync($request->categories);
+        $product->colors()->sync($request->colors);
+        $product->sizes()->sync($request->sizes);
+
         return redirect()->route('products.index')->with('success', 'Produit mis à jour avec succès.');
     }
 

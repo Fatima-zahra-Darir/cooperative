@@ -19,42 +19,63 @@
                 @enderror
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-                <div>
-                    <label for="category_id" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Catégorie</label>
-                    <select name="category_id" id="category_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; background: white;">
-                        <option value="">Sélectionner une catégorie</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('category_id')
+            <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 2rem;">
+                <!-- Catégories -->
+                <div class="field-container">
+                    <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Catégories</label>
+                    <div class="custom-select-wrapper" data-name="categories">
+                        <div class="selected-items"></div>
+                        <div class="input-wrapper">
+                            <input type="text" class="search-input" placeholder="Sélectionner des catégories...">
+                            <div class="options-dropdown">
+                                @foreach($categories as $category)
+                                    <div class="option" data-value="{{ $category->id }}" data-text="{{ $category->name }}">{{ $category->name }}</div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <select name="categories[]" multiple hidden required></select>
+                    </div>
+                    @error('categories')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div>
-                    <label for="color_id" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Couleur</label>
-                    <select name="color_id" id="color_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; background: white;">
-                        <option value="">Sélectionner une couleur</option>
-                        @foreach($colors as $color)
-                            <option value="{{ $color->id }}" {{ old('color_id') == $color->id ? 'selected' : '' }}>{{ $color->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('color_id')
+                <!-- Couleurs -->
+                <div class="field-container">
+                    <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Couleurs</label>
+                    <div class="custom-select-wrapper" data-name="colors">
+                        <div class="selected-items"></div>
+                        <div class="input-wrapper">
+                            <input type="text" class="search-input" placeholder="Sélectionner des couleurs...">
+                            <div class="options-dropdown">
+                                @foreach($colors as $color)
+                                    <div class="option" data-value="{{ $color->id }}" data-text="{{ $color->name }}">{{ $color->name }}</div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <select name="colors[]" multiple hidden required></select>
+                    </div>
+                    @error('colors')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div>
-                    <label for="size_id" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Taille</label>
-                    <select name="size_id" id="size_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; background: white;">
-                        <option value="">Sélectionner une taille</option>
-                        @foreach($sizes as $size)
-                            <option value="{{ $size->id }}" {{ old('size_id') == $size->id ? 'selected' : '' }}>{{ $size->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('size_id')
+                <!-- Tailles -->
+                <div class="field-container">
+                    <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Tailles</label>
+                    <div class="custom-select-wrapper" data-name="sizes">
+                        <div class="selected-items"></div>
+                        <div class="input-wrapper">
+                            <input type="text" class="search-input" placeholder="Sélectionner des tailles...">
+                            <div class="options-dropdown">
+                                @foreach($sizes as $size)
+                                    <div class="option" data-value="{{ $size->id }}" data-text="{{ $size->name }}">{{ $size->name }}</div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <select name="sizes[]" multiple hidden required></select>
+                    </div>
+                    @error('sizes')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
@@ -71,4 +92,201 @@
         </form>
     </div>
 </div>
+
+@push('styles')
+<style>
+    .custom-select-wrapper {
+        position: relative;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        background: white;
+        padding: 0.375rem;
+        min-height: 42px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .custom-select-wrapper:focus-within {
+        border-color: #2d7a52;
+        box-shadow: 0 0 0 3px rgba(45, 122, 82, 0.1);
+    }
+
+    .selected-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+    }
+
+    .tag {
+        display: inline-flex;
+        align-items: center;
+        background: #f0fdf4;
+        color: #166534;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: 1px solid #bbf7d0;
+        animation: slideIn 0.2s ease-out;
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tag .remove-btn {
+        margin-left: 0.375rem;
+        cursor: pointer;
+        color: #166534;
+        opacity: 0.6;
+        font-size: 1.1rem;
+        line-height: 1;
+    }
+
+    .tag .remove-btn:hover {
+        opacity: 1;
+    }
+
+    .input-wrapper {
+        flex: 1;
+        min-width: 120px;
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        border: none;
+        padding: 0.375rem;
+        outline: none;
+        font-size: 0.875rem;
+    }
+
+    .options-dropdown {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        left: -0.375rem;
+        right: -0.375rem;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 50;
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+    }
+
+    .options-dropdown.show {
+        display: block;
+    }
+
+    .option {
+        padding: 0.625rem 1rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: background 0.2s;
+    }
+
+    .option:hover {
+        background: #f9fafb;
+    }
+
+    .option.selected {
+        background: #f0fdf4;
+        color: #2d7a52;
+        font-weight: 500;
+        pointer-events: none;
+    }
+
+    .option.hidden {
+        display: none;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const wrappers = document.querySelectorAll('.custom-select-wrapper');
+
+        wrappers.forEach(wrapper => {
+            const input = wrapper.querySelector('.search-input');
+            const dropdown = wrapper.querySelector('.options-dropdown');
+            const selectedContainer = wrapper.querySelector('.selected-items');
+            const select = wrapper.querySelector('select');
+            const options = Array.from(wrapper.querySelectorAll('.option'));
+
+            const updateSelect = () => {
+                select.innerHTML = '';
+                const tags = selectedContainer.querySelectorAll('.tag');
+                tags.forEach(tag => {
+                    const opt = document.createElement('option');
+                    opt.value = tag.dataset.value;
+                    opt.selected = true;
+                    select.appendChild(opt);
+                });
+            };
+
+            const addTag = (value, text) => {
+                if (selectedContainer.querySelector(`[data-value="${value}"]`)) return;
+
+                const tag = document.createElement('div');
+                tag.className = 'tag';
+                tag.dataset.value = value;
+                tag.innerHTML = `
+                    <span>${text}</span>
+                    <span class="remove-btn">&times;</span>
+                `;
+
+                tag.querySelector('.remove-btn').onclick = () => {
+                    tag.remove();
+                    options.forEach(opt => {
+                        if (opt.dataset.value === value) opt.classList.remove('selected');
+                    });
+                    updateSelect();
+                };
+
+                selectedContainer.appendChild(tag);
+                updateSelect();
+                
+                // Mark option as selected
+                options.forEach(opt => {
+                    if (opt.dataset.value === value) opt.classList.add('selected');
+                });
+            };
+
+            input.onfocus = () => dropdown.classList.add('show');
+            
+            // Handle clicks outside
+            document.addEventListener('click', (e) => {
+                if (!wrapper.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            input.oninput = (e) => {
+                const term = e.target.value.toLowerCase();
+                options.forEach(opt => {
+                    const text = opt.dataset.text.toLowerCase();
+                    opt.classList.toggle('hidden', !text.includes(term));
+                });
+                dropdown.classList.add('show');
+            };
+
+            options.forEach(opt => {
+                opt.onclick = () => {
+                    addTag(opt.dataset.value, opt.dataset.text);
+                    input.value = '';
+                    options.forEach(o => o.classList.remove('hidden'));
+                    dropdown.classList.remove('show');
+                    input.focus();
+                };
+            });
+        });
+    });
+</script>
+@endpush
 @endsection

@@ -37,10 +37,20 @@
                 <tr style="border-bottom: 1px solid #f3f4f6;">
                     <td style="padding: 1rem; color: #1f2937; font-weight: 500;">{{ $product->name }}</td>
                     <td style="padding: 1rem; color: #4b5563;">
-                        <span style="background: #f3f4f6; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem;">{{ $product->category->name }}</span>
+                        @foreach($product->categories as $category)
+                            <span style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 1rem; font-size: 0.75rem; margin-right: 0.25rem;">{{ $category->name }}</span>
+                        @endforeach
                     </td>
-                    <td style="padding: 1rem; color: #4b5563;">{{ $product->color->name }}</td>
-                    <td style="padding: 1rem; color: #4b5563;">{{ $product->size->name }}</td>
+                    <td style="padding: 1rem; color: #4b5563;">
+                        @foreach($product->colors as $color)
+                            <span style="background: #e0f2fe; color: #0369a1; padding: 0.25rem 0.5rem; border-radius: 1rem; font-size: 0.75rem; margin-right: 0.25rem;">{{ $color->name }}</span>
+                        @endforeach
+                    </td>
+                    <td style="padding: 1rem; color: #4b5563;">
+                        @foreach($product->sizes as $size)
+                            <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.5rem; border-radius: 1rem; font-size: 0.75rem; margin-right: 0.25rem;">{{ $size->name }}</span>
+                        @endforeach
+                    </td>
                     <td style="padding: 1rem; text-align: right;">
                         <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
                             <a href="{{ route('products.edit', $product->id) }}" style="color: #4b5563; text-decoration: none; font-size: 0.875rem; padding: 0.25rem 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.25rem;">Modifier</a>
