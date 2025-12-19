@@ -238,6 +238,78 @@
                 width: 200px;
             }
         }
+        /* Dropdown Styles */
+        .nav-dropdown {
+            width: 100%;
+        }
+
+        .nav-dropdown-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+
+        .nav-dropdown-trigger:hover {
+            background: #f9fafb;
+            color: #1f2937;
+        }
+
+        .nav-dropdown-trigger.active {
+            color: #2d7a52;
+            font-weight: 500;
+        }
+
+        .nav-dropdown-icon {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.2s;
+        }
+
+        .nav-dropdown.open .nav-dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        .nav-dropdown-content {
+            display: none;
+            background: #f9fafb;
+            padding: 0.25rem 0;
+        }
+
+        .nav-dropdown.open .nav-dropdown-content {
+            display: block;
+        }
+
+        .sub-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 1.5rem 0.625rem 3.25rem;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .sub-nav-item:hover {
+            color: #1f2937;
+            background: #f3f4f6;
+        }
+
+        .sub-nav-item.active {
+            color: #2d7a52;
+            font-weight: 600;
+            background: #f0fdf4;
+            border-right: 3px solid #2d7a52;
+        }
     </style>
     @stack('styles')
 </head>
@@ -263,12 +335,33 @@
                     </svg>
                     <span>Gestion du stock</span>
                 </a>
-                <a href="{{ route('products.index') }}" class="nav-item {{ request()->routeIs('products.*') ? 'active' : '' }}">
-                    <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                    </svg>
-                    <span>Produits</span>
-                </a>
+                <div class="nav-dropdown {{ request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*') ? 'open' : '' }}">
+                    <button class="nav-dropdown-trigger {{ request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                            <span>Gestion Produits</span>
+                        </div>
+                        <svg class="nav-dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="nav-dropdown-content">
+                        <a href="{{ route('products.index') }}" class="sub-nav-item {{ request()->routeIs('products.*') ? 'active' : '' }}">
+                            <span>Produits</span>
+                        </a>
+                        <a href="{{ route('categories.index') }}" class="sub-nav-item {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                            <span>Catégories</span>
+                        </a>
+                        <a href="{{ route('colors.index') }}" class="sub-nav-item {{ request()->routeIs('colors.*') ? 'active' : '' }}">
+                            <span>Couleurs</span>
+                        </a>
+                        <a href="{{ route('sizes.index') }}" class="sub-nav-item {{ request()->routeIs('sizes.*') ? 'active' : '' }}">
+                            <span>Tailles</span>
+                        </a>
+                    </div>
+                </div>
                 <a href="{{ route('clients.index') }}" class="nav-item {{ request()->routeIs('clients.*') ? 'active' : '' }}">
                     <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -365,6 +458,12 @@
         </div>
     </main>
 
+    <script>
+        function toggleDropdown(button) {
+            const dropdown = button.parentElement;
+            dropdown.classList.toggle('open');
+        }
+    </script>
     @stack('scripts')
 </body>
 </html>

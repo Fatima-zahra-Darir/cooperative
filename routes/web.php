@@ -10,6 +10,9 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OncaController;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ColorController;
+use App\Http\Controllers\SizeController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -24,7 +27,10 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
 
     // Products
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::resource('products', ProductController::class);
+    Route::resource('categories', CategoryController::class);
+    Route::resource('colors', ColorController::class);
+    Route::resource('sizes', SizeController::class);
 
     // Clients
     Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');
