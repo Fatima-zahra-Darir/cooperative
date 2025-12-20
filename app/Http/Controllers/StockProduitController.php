@@ -7,6 +7,7 @@ use App\Models\ProductStock;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Size;
+use App\Models\StockMovement;
 use Illuminate\Http\Request;
 
 class StockProduitController extends Controller
@@ -16,7 +17,7 @@ class StockProduitController extends Controller
      */
     public function index()
     {
-        $stocks = ProductStock::with(['product', 'category', 'color', 'size'])->get();
+        $stocks = ProductStock::with(['product', 'category', 'color', 'size', 'movements'])->get();
         return view('stock-produit.index', compact('stocks'));
     }
 
@@ -82,7 +83,9 @@ class StockProduitController extends Controller
      */
     public function show(string $id)
     {
-        $stock = ProductStock::with(['product', 'category', 'color', 'size'])->findOrFail($id);
+        $stock = ProductStock::with(['product', 'category', 'color', 'size', 'movements' => function($query) {
+            $query->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc');
+        }])->findOrFail($id);
         return view('stock-produit.show', compact('stock'));
     }
 
@@ -141,5 +144,59 @@ class StockProduitController extends Controller
         $stock->delete();
 
         return redirect()->route('stock-produit.index')->with('success', 'Stock produit supprimé avec succès.');
+    }
+
+    /**
+     * Restock a product
+     */
+    public function restock(Request $request, string $id)
+    {
+        $stock = ProductStock::findOrFail($id);
+        
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'movement_date' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        StockMovement::create([
+            'product_stock_id' => $stock->id,
+            'type' => 'restock',
+            'quantity' => $request->quantity,
+            'movement_date' => $request->movement_date,
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->route('stock-produit.index')->with('success', 'Stock réapprovisionné avec succès.');
+    }
+
+    /**
+     * Record product usage
+     */
+    public function usage(Request $request, string $id)
+    {
+        $stock = ProductStock::findOrFail($id);
+        
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'movement_date' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        // Check if there's enough stock
+        $globalQuantity = $stock->global_quantity;
+        if ($request->quantity > $globalQuantity) {
+            return back()->withErrors(['quantity' => 'Quantité insuffisante en stock. Stock disponible: ' . $globalQuantity])->withInput();
+        }
+
+        StockMovement::create([
+            'product_stock_id' => $stock->id,
+            'type' => 'usage',
+            'quantity' => $request->quantity,
+            'movement_date' => $request->movement_date,
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->route('stock-produit.index')->with('success', 'Utilisation enregistrée avec succès.');
     }
 }

@@ -29,7 +29,11 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
     Route::resource('stock-produit', StockProduitController::class);
     Route::get('/stock-produit/product/{productId}/attributes', [StockProduitController::class, 'getProductAttributes'])->name('stock-produit.product-attributes');
+    Route::post('/stock-produit/{id}/restock', [StockProduitController::class, 'restock'])->name('stock-produit.restock');
+    Route::post('/stock-produit/{id}/usage', [StockProduitController::class, 'usage'])->name('stock-produit.usage');
     Route::resource('stock-capsules', StockCapsuleController::class);
+    Route::post('/stock-capsules/{id}/restock', [StockCapsuleController::class, 'restock'])->name('stock-capsules.restock');
+    Route::post('/stock-capsules/{id}/usage', [StockCapsuleController::class, 'usage'])->name('stock-capsules.usage');
 
     // Products
     Route::resource('products', ProductController::class);

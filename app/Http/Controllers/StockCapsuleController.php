@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Capsule;
+use App\Models\CapsuleStockMovement;
 use Illuminate\Http\Request;
 
 class StockCapsuleController extends Controller
@@ -12,7 +13,7 @@ class StockCapsuleController extends Controller
      */
     public function index()
     {
-        $capsules = Capsule::all();
+        $capsules = Capsule::with('movements')->get();
         return view('stock-capsules.index', compact('capsules'));
     }
 
@@ -45,7 +46,9 @@ class StockCapsuleController extends Controller
      */
     public function show(string $id)
     {
-        $capsule = Capsule::findOrFail($id);
+        $capsule = Capsule::with(['movements' => function($query) {
+            $query->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc');
+        }])->findOrFail($id);
         return view('stock-capsules.show', compact('capsule'));
     }
 
@@ -85,5 +88,59 @@ class StockCapsuleController extends Controller
         $capsule->delete();
 
         return redirect()->route('stock-capsules.index')->with('success', 'Stock capsule supprimé avec succès.');
+    }
+
+    /**
+     * Restock a capsule
+     */
+    public function restock(Request $request, string $id)
+    {
+        $capsule = Capsule::findOrFail($id);
+        
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'movement_date' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        CapsuleStockMovement::create([
+            'capsule_id' => $capsule->id,
+            'type' => 'restock',
+            'quantity' => $request->quantity,
+            'movement_date' => $request->movement_date,
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->route('stock-capsules.index')->with('success', 'Stock réapprovisionné avec succès.');
+    }
+
+    /**
+     * Record capsule usage
+     */
+    public function usage(Request $request, string $id)
+    {
+        $capsule = Capsule::findOrFail($id);
+        
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'movement_date' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        // Check if there's enough stock
+        $globalQuantity = $capsule->global_quantity;
+        if ($request->quantity > $globalQuantity) {
+            return back()->withErrors(['quantity' => 'Quantité insuffisante en stock. Stock disponible: ' . $globalQuantity])->withInput();
+        }
+
+        CapsuleStockMovement::create([
+            'capsule_id' => $capsule->id,
+            'type' => 'usage',
+            'quantity' => $request->quantity,
+            'movement_date' => $request->movement_date,
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->route('stock-capsules.index')->with('success', 'Utilisation enregistrée avec succès.');
     }
 }
