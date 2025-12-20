@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\ProductStock;
+use App\Models\Category;
+use App\Models\Color;
+use App\Models\Size;
 use Illuminate\Http\Request;
 
 class StockProduitController extends Controller
@@ -13,7 +16,7 @@ class StockProduitController extends Controller
      */
     public function index()
     {
-        $stocks = ProductStock::with('product')->get();
+        $stocks = ProductStock::with(['product', 'category', 'color', 'size'])->get();
         return view('stock-produit.index', compact('stocks'));
     }
 
@@ -27,17 +30,49 @@ class StockProduitController extends Controller
     }
 
     /**
+     * Get product attributes (categories, colors, sizes) for a given product
+     */
+    public function getProductAttributes($productId)
+    {
+        $product = Product::with(['categories', 'colors', 'sizes'])->findOrFail($productId);
+        
+        return response()->json([
+            'categories' => $product->categories,
+            'colors' => $product->colors,
+            'sizes' => $product->sizes,
+        ]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
+            'category_id' => 'nullable|exists:categories,id',
+            'color_id' => 'nullable|exists:colors,id',
+            'size_id' => 'nullable|exists:sizes,id',
             'quantity' => 'required|integer|min:0',
             'notes' => 'nullable|string',
         ]);
 
-        ProductStock::create($request->only(['product_id', 'quantity', 'notes']));
+        // Verify that the selected attributes belong to the product
+        $product = Product::with(['categories', 'colors', 'sizes'])->findOrFail($request->product_id);
+        
+        if ($request->category_id && !$product->categories->contains('id', $request->category_id)) {
+            return back()->withErrors(['category_id' => 'La catégorie sélectionnée n\'appartient pas à ce produit.'])->withInput();
+        }
+        
+        if ($request->color_id && !$product->colors->contains('id', $request->color_id)) {
+            return back()->withErrors(['color_id' => 'La couleur sélectionnée n\'appartient pas à ce produit.'])->withInput();
+        }
+        
+        if ($request->size_id && !$product->sizes->contains('id', $request->size_id)) {
+            return back()->withErrors(['size_id' => 'La taille sélectionnée n\'appartient pas à ce produit.'])->withInput();
+        }
+
+        ProductStock::create($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'notes']));
 
         return redirect()->route('stock-produit.index')->with('success', 'Stock produit créé avec succès.');
     }
@@ -47,7 +82,7 @@ class StockProduitController extends Controller
      */
     public function show(string $id)
     {
-        $stock = ProductStock::with('product')->findOrFail($id);
+        $stock = ProductStock::with(['product', 'category', 'color', 'size'])->findOrFail($id);
         return view('stock-produit.show', compact('stock'));
     }
 
@@ -56,7 +91,7 @@ class StockProduitController extends Controller
      */
     public function edit(string $id)
     {
-        $stock = ProductStock::with('product')->findOrFail($id);
+        $stock = ProductStock::with(['product', 'category', 'color', 'size'])->findOrFail($id);
         $products = Product::all();
         return view('stock-produit.edit', compact('stock', 'products'));
     }
@@ -70,11 +105,29 @@ class StockProduitController extends Controller
         
         $request->validate([
             'product_id' => 'required|exists:products,id',
+            'category_id' => 'nullable|exists:categories,id',
+            'color_id' => 'nullable|exists:colors,id',
+            'size_id' => 'nullable|exists:sizes,id',
             'quantity' => 'required|integer|min:0',
             'notes' => 'nullable|string',
         ]);
 
-        $stock->update($request->only(['product_id', 'quantity', 'notes']));
+        // Verify that the selected attributes belong to the product
+        $product = Product::with(['categories', 'colors', 'sizes'])->findOrFail($request->product_id);
+        
+        if ($request->category_id && !$product->categories->contains('id', $request->category_id)) {
+            return back()->withErrors(['category_id' => 'La catégorie sélectionnée n\'appartient pas à ce produit.'])->withInput();
+        }
+        
+        if ($request->color_id && !$product->colors->contains('id', $request->color_id)) {
+            return back()->withErrors(['color_id' => 'La couleur sélectionnée n\'appartient pas à ce produit.'])->withInput();
+        }
+        
+        if ($request->size_id && !$product->sizes->contains('id', $request->size_id)) {
+            return back()->withErrors(['size_id' => 'La taille sélectionnée n\'appartient pas à ce produit.'])->withInput();
+        }
+
+        $stock->update($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'notes']));
 
         return redirect()->route('stock-produit.index')->with('success', 'Stock produit mis à jour avec succès.');
     }

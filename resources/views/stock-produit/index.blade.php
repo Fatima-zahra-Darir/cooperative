@@ -26,6 +26,9 @@
             <thead>
                 <tr style="border-bottom: 1px solid #e5e7eb; text-align: left;">
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Produit</th>
+                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Catégorie</th>
+                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Couleur</th>
+                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Taille</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Quantité</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Notes</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: right;">Actions</th>
@@ -35,6 +38,9 @@
                 @forelse($stocks as $stock)
                 <tr style="border-bottom: 1px solid #f3f4f6;">
                     <td style="padding: 1rem; color: #1f2937; font-weight: 500;">{{ $stock->product->name }}</td>
+                    <td style="padding: 1rem; color: #4b5563;">{{ $stock->category->name ?? '-' }}</td>
+                    <td style="padding: 1rem; color: #4b5563;">{{ $stock->color->name ?? '-' }}</td>
+                    <td style="padding: 1rem; color: #4b5563;">{{ $stock->size->name ?? '-' }}</td>
                     <td style="padding: 1rem; color: #4b5563;">
                         <span style="background: {{ $stock->quantity > 0 ? '#ecfdf5' : '#fee2e2' }}; color: {{ $stock->quantity > 0 ? '#065f46' : '#991b1b' }}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">
                             {{ $stock->quantity }} unités
@@ -54,7 +60,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" style="padding: 2rem; text-align: center; color: #9ca3af;">Aucun stock produit trouvé.</td>
+                    <td colspan="7" style="padding: 2rem; text-align: center; color: #9ca3af;">Aucun stock produit trouvé.</td>
                 </tr>
                 @endforelse
             </tbody>

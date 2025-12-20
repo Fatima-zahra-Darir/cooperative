@@ -28,6 +28,7 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
     // Stock Management
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
     Route::resource('stock-produit', StockProduitController::class);
+    Route::get('/stock-produit/product/{productId}/attributes', [StockProduitController::class, 'getProductAttributes'])->name('stock-produit.product-attributes');
     Route::resource('stock-capsules', StockCapsuleController::class);
 
     // Products
