@@ -15,6 +15,7 @@ use App\Http\Controllers\ColorController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\StockProduitController;
 use App\Http\Controllers\StockCapsuleController;
+use App\Http\Controllers\CommandeController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -42,7 +43,11 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
     Route::resource('sizes', SizeController::class);
 
     // Clients
-    Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');
+    Route::resource('clients', ClientController::class);
+
+    // Commandes
+    Route::resource('commandes', CommandeController::class);
+    Route::post('/commandes/{commande}/update-status', [CommandeController::class, 'updateStatus'])->name('commandes.update-status');
 
     // Revenue
     Route::get('/revenue', [RevenueController::class, 'index'])->name('revenue.index');
