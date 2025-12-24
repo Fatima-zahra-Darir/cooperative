@@ -15,6 +15,7 @@ use App\Http\Controllers\ColorController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\StockProduitController;
 use App\Http\Controllers\StockCapsuleController;
+use App\Http\Controllers\StockHerbController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\HerbController;
 
@@ -36,6 +37,7 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
     Route::resource('stock-capsules', StockCapsuleController::class);
     Route::post('/stock-capsules/{id}/restock', [StockCapsuleController::class, 'restock'])->name('stock-capsules.restock');
     Route::post('/stock-capsules/{id}/usage', [StockCapsuleController::class, 'usage'])->name('stock-capsules.usage');
+    Route::resource('stock-herb', StockHerbController::class);
 
     // Products
     Route::resource('products', ProductController::class);

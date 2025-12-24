@@ -329,8 +329,8 @@
                     </svg>
                     <span>Tableau de bord</span>
                 </a>
-                <div class="nav-dropdown {{ request()->routeIs('stock-produit.*', 'stock-capsules.*') ? 'open' : '' }}">
-                    <button class="nav-dropdown-trigger {{ request()->routeIs('stock-produit.*', 'stock-capsules.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
+                <div class="nav-dropdown {{ request()->routeIs('stock-produit.*', 'stock-capsules.*', 'stock-herb.*') ? 'open' : '' }}">
+                    <button class="nav-dropdown-trigger {{ request()->routeIs('stock-produit.*', 'stock-capsules.*', 'stock-herb.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
@@ -343,15 +343,18 @@
                     </button>
                     <div class="nav-dropdown-content">
                         <a href="{{ route('stock-produit.index') }}" class="sub-nav-item {{ request()->routeIs('stock-produit.*') ? 'active' : '' }}">
-                            <span>Stock Produit</span>
+                            <span>Stock Embalage</span>
                         </a>
                         <a href="{{ route('stock-capsules.index') }}" class="sub-nav-item {{ request()->routeIs('stock-capsules.*') ? 'active' : '' }}">
                             <span>Stock Capsules</span>
                         </a>
+                        <a href="{{ route('stock-herb.index') }}" class="sub-nav-item {{ request()->routeIs('stock-herb.*') ? 'active' : '' }}">
+                            <span>Stock Herb</span>
+                        </a>
                     </div>
                 </div>
-                <div class="nav-dropdown {{ request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*', 'herbs.*') ? 'open' : '' }}">
-                    <button class="nav-dropdown-trigger {{ request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*', 'herbs.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
+                <div class="nav-dropdown {{ request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*') ? 'open' : '' }}">
+                    <button class="nav-dropdown-trigger {{ request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
@@ -366,9 +369,6 @@
                         <a href="{{ route('products.index') }}" class="sub-nav-item {{ request()->routeIs('products.*') ? 'active' : '' }}">
                             <span>Embalage</span>
                         </a>
-                        <a href="{{ route('herbs.index') }}" class="sub-nav-item {{ request()->routeIs('herbs.*') ? 'active' : '' }}">
-                            <span>Herb</span>
-                        </a>
                         <a href="{{ route('categories.index') }}" class="sub-nav-item {{ request()->routeIs('categories.*') ? 'active' : '' }}">
                             <span>Catégories</span>
                         </a>
@@ -377,6 +377,24 @@
                         </a>
                         <a href="{{ route('sizes.index') }}" class="sub-nav-item {{ request()->routeIs('sizes.*') ? 'active' : '' }}">
                             <span>Tailles</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown {{ request()->routeIs('herbs.*') ? 'open' : '' }}">
+                    <button class="nav-dropdown-trigger {{ request()->routeIs('herbs.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                            <span>Gestion Herb</span>
+                        </div>
+                        <svg class="nav-dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="nav-dropdown-content">
+                        <a href="{{ route('herbs.index') }}" class="sub-nav-item {{ request()->routeIs('herbs.*') ? 'active' : '' }}">
+                            <span>Herb</span>
                         </a>
                     </div>
                 </div>
