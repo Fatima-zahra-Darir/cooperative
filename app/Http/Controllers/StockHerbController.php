@@ -14,7 +14,7 @@ class StockHerbController extends Controller
      */
     public function index()
     {
-        $herbs = Herb::with('movements')->get();
+        $herbs = Herb::with(['movements.fornisseur'])->get();
         return view('stock-herb.index', compact('herbs'));
     }
 
@@ -59,7 +59,7 @@ class StockHerbController extends Controller
     public function show(string $id)
     {
         $herb = Herb::with(['movements' => function($query) {
-            $query->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc');
+            $query->with('fornisseur')->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc');
         }])->findOrFail($id);
         return view('stock-herb.show', compact('herb'));
     }

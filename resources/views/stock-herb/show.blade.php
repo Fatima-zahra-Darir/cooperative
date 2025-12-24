@@ -51,6 +51,7 @@
                     <tr style="border-bottom: 2px solid #e5e7eb; background: #f9fafb;">
                         <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: left;">Type</th>
                         <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: left;">Quantité</th>
+                        <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: left;">Fournisseur</th>
                         <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: left;">Date</th>
                         <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: left;">Notes</th>
                         <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: left;">Date d'enregistrement</th>
@@ -72,6 +73,16 @@
                         </td>
                         <td style="padding: 1rem; color: #1f2937; font-weight: 500;">
                             {{ $movement->quantity }}
+                        </td>
+                        <td style="padding: 1rem; color: #1f2937;">
+                            @if($movement->fornisseur)
+                                <span style="font-weight: 500;">{{ $movement->fornisseur->name }}</span>
+                                @if($movement->fornisseur->ville)
+                                    <span style="color: #6b7280; font-size: 0.875rem;"> - {{ $movement->fornisseur->ville }}</span>
+                                @endif
+                            @else
+                                <span style="color: #9ca3af;">-</span>
+                            @endif
                         </td>
                         <td style="padding: 1rem; color: #1f2937;">
                             {{ $movement->movement_date->format('d/m/Y') }}

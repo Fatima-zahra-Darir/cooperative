@@ -24,6 +24,7 @@
                 <tr style="background: #f9fafb; border-bottom: 2px solid #e5e7eb;">
                     <th style="padding: 0.75rem; text-align: left; font-weight: 600; color: #374151;">Nom</th>
                     <th style="padding: 0.75rem; text-align: left; font-weight: 600; color: #374151;">Source</th>
+                    <th style="padding: 0.75rem; text-align: left; font-weight: 600; color: #374151;">Fournisseur</th>
                     <th style="padding: 0.75rem; text-align: right; font-weight: 600; color: #374151;">Stock disponible</th>
                     <th style="padding: 0.75rem; text-align: right; font-weight: 600; color: #374151;">Actions</th>
                 </tr>
@@ -32,10 +33,22 @@
                 @foreach($herbs as $herb)
                     @php
                         $stock = $herb->global_quantity;
+                        // Get the most recent entry movement with supplier
+                        $latestEntry = $herb->movements()->where('type', 'entry')->with('fornisseur')->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc')->first();
                     @endphp
                     <tr style="border-bottom: 1px solid #e5e7eb;">
                         <td style="padding: 0.75rem; color: #1f2937; font-weight: 500;">{{ $herb->name }}</td>
                         <td style="padding: 0.75rem; color: #6b7280;">{{ $herb->source }}</td>
+                        <td style="padding: 0.75rem; color: #6b7280;">
+                            @if($latestEntry && $latestEntry->fornisseur)
+                                <span style="font-weight: 500; color: #1f2937;">{{ $latestEntry->fornisseur->name }}</span>
+                                @if($latestEntry->fornisseur->ville)
+                                    <span style="color: #6b7280; font-size: 0.875rem;"> - {{ $latestEntry->fornisseur->ville }}</span>
+                                @endif
+                            @else
+                                <span style="color: #9ca3af;">-</span>
+                            @endif
+                        </td>
                         <td style="padding: 0.75rem; text-align: right;">
                             <span style="background: {{ $stock > 0 ? '#ecfdf5' : '#fee2e2' }}; color: {{ $stock > 0 ? '#065f46' : '#991b1b' }}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">
                                 {{ $stock }}
