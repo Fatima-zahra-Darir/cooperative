@@ -57,6 +57,7 @@
                     <tr style="border-bottom: 2px solid #e5e7eb; background: #f9fafb;">
                         <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: left;">Type</th>
                         <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: left;">Quantité</th>
+                        <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: left;">Herbe</th>
                         <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: left;">Date</th>
                         <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: left;">Notes</th>
                         <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: left;">Date d'enregistrement</th>
@@ -78,6 +79,19 @@
                         </td>
                         <td style="padding: 1rem; color: #1f2937; font-weight: 500;">
                             {{ $movement->quantity }} cartons
+                        </td>
+                        <td style="padding: 1rem; color: #4b5563;">
+                            @if($movement->type == 'usage' && $movement->herb)
+                                <div>
+                                    <strong>{{ $movement->herb->name }}</strong>
+                                    @if($movement->herb_quantity)
+                                        <br>
+                                        <small style="color: #6b7280;">Quantité: {{ number_format($movement->herb_quantity, 2) }}</small>
+                                    @endif
+                                </div>
+                            @else
+                                <span style="color: #9ca3af;">-</span>
+                            @endif
                         </td>
                         <td style="padding: 1rem; color: #4b5563;">
                             {{ $movement->movement_date->format('d/m/Y') }}

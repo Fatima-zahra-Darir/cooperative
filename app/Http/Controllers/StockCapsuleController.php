@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Capsule;
 use App\Models\CapsuleStockMovement;
+use App\Models\Herb;
+use App\Models\HerbStockMovement;
 use Illuminate\Http\Request;
 
 class StockCapsuleController extends Controller
@@ -14,7 +16,8 @@ class StockCapsuleController extends Controller
     public function index()
     {
         $capsules = Capsule::with('movements')->get();
-        return view('stock-capsules.index', compact('capsules'));
+        $herbs = Herb::all();
+        return view('stock-capsules.index', compact('capsules', 'herbs'));
     }
 
     /**
@@ -47,7 +50,7 @@ class StockCapsuleController extends Controller
     public function show(string $id)
     {
         $capsule = Capsule::with(['movements' => function($query) {
-            $query->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc');
+            $query->with('herb')->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc');
         }])->findOrFail($id);
         return view('stock-capsules.show', compact('capsule'));
     }
@@ -123,24 +126,45 @@ class StockCapsuleController extends Controller
         
         $request->validate([
             'quantity' => 'required|integer|min:1',
+            'herb_id' => 'required|exists:herbs,id',
+            'herb_quantity' => 'required|numeric|min:0.01',
             'movement_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);
 
-        // Check if there's enough stock
+        // Check if there's enough capsule stock
         $globalQuantity = $capsule->global_quantity;
         if ($request->quantity > $globalQuantity) {
             return back()->withErrors(['quantity' => 'Quantité insuffisante en stock. Stock disponible: ' . $globalQuantity])->withInput();
         }
 
+        // Check if there's enough herb stock
+        $herb = Herb::findOrFail($request->herb_id);
+        $herbGlobalQuantity = $herb->global_quantity;
+        if ($request->herb_quantity > $herbGlobalQuantity) {
+            return back()->withErrors(['herb_quantity' => 'Quantité d\'herbe insuffisante en stock. Stock disponible: ' . $herbGlobalQuantity])->withInput();
+        }
+
+        // Create capsule stock movement
         CapsuleStockMovement::create([
             'capsule_id' => $capsule->id,
+            'herb_id' => $request->herb_id,
+            'herb_quantity' => $request->herb_quantity,
             'type' => 'usage',
             'quantity' => $request->quantity,
             'movement_date' => $request->movement_date,
             'notes' => $request->notes,
         ]);
 
-        return redirect()->route('stock-capsules.index')->with('success', 'Utilisation enregistrée avec succès.');
+        // Automatically create herb stock movement to deduct from herb stock
+        HerbStockMovement::create([
+            'herb_id' => $request->herb_id,
+            'type' => 'usage',
+            'quantity' => $request->herb_quantity,
+            'movement_date' => $request->movement_date,
+            'notes' => 'Utilisation via capsules: ' . $capsule->carton . ' (' . $request->quantity . ' cartons)',
+        ]);
+
+        return redirect()->route('stock-capsules.index')->with('success', 'Utilisation enregistrée avec succès. Stock d\'herbe déduit automatiquement.');
     }
 }

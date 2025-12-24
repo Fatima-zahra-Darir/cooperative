@@ -395,6 +395,27 @@
                 @enderror
             </div>
             <div class="form-group">
+                <label class="form-label" for="usage_herb_id">Herbe utilisée <span style="color: #ef4444;">*</span></label>
+                <select id="usage_herb_id" name="herb_id" class="form-input" required>
+                    <option value="">Sélectionner une herbe</option>
+                    @foreach($herbs as $herb)
+                        <option value="{{ $herb->id }}" data-stock="{{ $herb->global_quantity }}">{{ $herb->name }} (Source: {{ $herb->source }})</option>
+                    @endforeach
+                </select>
+                <small style="color: #6b7280; font-size: 0.75rem; display: block; margin-top: 0.25rem;">Stock d'herbe disponible: <span id="available_herb_quantity">-</span></small>
+                @error('herb_id')
+                    <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="usage_herb_quantity">Quantité d'herbe utilisée <span style="color: #ef4444;">*</span></label>
+                <input type="number" id="usage_herb_quantity" name="herb_quantity" class="form-input" step="0.01" min="0.01" required>
+                <small style="color: #6b7280; font-size: 0.75rem; display: block; margin-top: 0.25rem;">Quantité d'herbe utilisée pour remplir les capsules</small>
+                @error('herb_quantity')
+                    <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="form-group">
                 <label class="form-label" for="usage_date">Date d'ouverture</label>
                 <input type="date" id="usage_date" name="movement_date" class="form-input" value="{{ date('Y-m-d') }}" required>
                 @error('movement_date')
@@ -444,7 +465,27 @@
         modal.classList.remove('active');
         const form = document.getElementById('usageForm');
         form.reset();
+        // Reset herb stock display
+        document.getElementById('available_herb_quantity').textContent = '-';
     }
+
+    // Update herb stock when herb is selected
+    document.addEventListener('DOMContentLoaded', function() {
+        const herbSelect = document.getElementById('usage_herb_id');
+        const herbStockSpan = document.getElementById('available_herb_quantity');
+        
+        if (herbSelect && herbStockSpan) {
+            herbSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption.value) {
+                    const stock = selectedOption.getAttribute('data-stock');
+                    herbStockSpan.textContent = stock || '0';
+                } else {
+                    herbStockSpan.textContent = '-';
+                }
+            });
+        }
+    });
 
     // Close modals when clicking outside
     window.onclick = function(event) {
