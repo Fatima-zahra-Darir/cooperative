@@ -16,6 +16,7 @@ use App\Http\Controllers\SizeController;
 use App\Http\Controllers\StockProduitController;
 use App\Http\Controllers\StockCapsuleController;
 use App\Http\Controllers\CommandeController;
+use App\Http\Controllers\HerbController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -38,6 +39,7 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
 
     // Products
     Route::resource('products', ProductController::class);
+    Route::resource('herbs', HerbController::class);
     Route::resource('categories', CategoryController::class);
     Route::resource('colors', ColorController::class);
     Route::resource('sizes', SizeController::class);

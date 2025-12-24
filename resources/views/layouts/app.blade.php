@@ -350,13 +350,13 @@
                         </a>
                     </div>
                 </div>
-                <div class="nav-dropdown {{ request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*') ? 'open' : '' }}">
-                    <button class="nav-dropdown-trigger {{ request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
+                <div class="nav-dropdown {{ request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*', 'herbs.*') ? 'open' : '' }}">
+                    <button class="nav-dropdown-trigger {{ request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*', 'herbs.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                             </svg>
-                            <span>Gestion Produits</span>
+                            <span>Gestion Embalage</span>
                         </div>
                         <svg class="nav-dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -364,7 +364,10 @@
                     </button>
                     <div class="nav-dropdown-content">
                         <a href="{{ route('products.index') }}" class="sub-nav-item {{ request()->routeIs('products.*') ? 'active' : '' }}">
-                            <span>Produits</span>
+                            <span>Embalage</span>
+                        </a>
+                        <a href="{{ route('herbs.index') }}" class="sub-nav-item {{ request()->routeIs('herbs.*') ? 'active' : '' }}">
+                            <span>Herb</span>
                         </a>
                         <a href="{{ route('categories.index') }}" class="sub-nav-item {{ request()->routeIs('categories.*') ? 'active' : '' }}">
                             <span>Catégories</span>

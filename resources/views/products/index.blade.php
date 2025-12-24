@@ -11,7 +11,7 @@
             <p style="color: #6b7280;">Liste complète de vos produits et leurs attributs.</p>
         </div>
         <a href="{{ route('products.create') }}" style="background: #2d7a52; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; font-weight: 500; transition: background 0.2s;">
-            + Nouveau Produit
+            + Nouveau Embalage
         </a>
     </div>
 
