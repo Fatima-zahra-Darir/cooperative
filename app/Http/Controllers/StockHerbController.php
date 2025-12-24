@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Herb;
 use App\Models\HerbStockMovement;
+use App\Models\Fornisseur;
 use Illuminate\Http\Request;
 
 class StockHerbController extends Controller
@@ -23,7 +24,8 @@ class StockHerbController extends Controller
     public function create()
     {
         $herbs = Herb::all();
-        return view('stock-herb.create', compact('herbs'));
+        $fornisseurs = Fornisseur::all();
+        return view('stock-herb.create', compact('herbs', 'fornisseurs'));
     }
 
     /**
@@ -33,6 +35,7 @@ class StockHerbController extends Controller
     {
         $request->validate([
             'herb_id' => 'required|exists:herbs,id',
+            'fornisseur_id' => 'nullable|exists:fornisseurs,id',
             'quantity' => 'required|integer|min:1',
             'movement_date' => 'required|date',
             'notes' => 'nullable|string',
@@ -40,6 +43,7 @@ class StockHerbController extends Controller
 
         HerbStockMovement::create([
             'herb_id' => $request->herb_id,
+            'fornisseur_id' => $request->fornisseur_id,
             'type' => 'entry',
             'quantity' => $request->quantity,
             'movement_date' => $request->movement_date,
