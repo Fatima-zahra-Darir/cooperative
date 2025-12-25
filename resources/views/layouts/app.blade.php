@@ -329,8 +329,8 @@
                     </svg>
                     <span>Tableau de bord</span>
                 </a>
-                <div class="nav-dropdown {{ request()->routeIs('stock-produit.*', 'stock-capsules.*', 'stock-herb.*') ? 'open' : '' }}">
-                    <button class="nav-dropdown-trigger {{ request()->routeIs('stock-produit.*', 'stock-capsules.*', 'stock-herb.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
+                <div class="nav-dropdown {{ request()->routeIs('stock-produit.*', 'stock-capsules.*', 'stock-capsules-remplie.*', 'stock-herb.*') ? 'open' : '' }}">
+                    <button class="nav-dropdown-trigger {{ request()->routeIs('stock-produit.*', 'stock-capsules.*', 'stock-capsules-remplie.*', 'stock-herb.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
@@ -346,7 +346,10 @@
                             <span>Stock Embalage</span>
                         </a>
                         <a href="{{ route('stock-capsules.index') }}" class="sub-nav-item {{ request()->routeIs('stock-capsules.*') ? 'active' : '' }}">
-                            <span>Stock Capsules</span>
+                            <span>Stock Capsules vide</span>
+                        </a>
+                        <a href="{{ route('stock-capsules-remplie.index') }}" class="sub-nav-item {{ request()->routeIs('stock-capsules-remplie.*') ? 'active' : '' }}">
+                            <span>Stock Capsules remplie</span>
                         </a>
                         <a href="{{ route('stock-herb.index') }}" class="sub-nav-item {{ request()->routeIs('stock-herb.*') ? 'active' : '' }}">
                             <span>Stock Herb</span>

@@ -13,6 +13,11 @@ class Capsule extends Model
         return $this->hasMany(CapsuleStockMovement::class);
     }
 
+    public function filledCapsules()
+    {
+        return $this->hasMany(FilledCapsule::class);
+    }
+
     /**
      * Calculate the global quantity based on movements
      */

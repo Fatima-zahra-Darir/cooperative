@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Détails Stock Capsules - Co-op ERP')
-@section('page-title', 'Détails Stock Capsules')
+@section('title', 'Détails Stock Capsules vide - Co-op ERP')
+@section('page-title', 'Détails Stock Capsules vide')
 
 @section('content')
 <div style="background: white; border-radius: 0.75rem; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <div>
-            <h2 style="font-size: 1.5rem; font-weight: 600; color: #1f2937;">Détails du Stock Capsules</h2>
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: #1f2937;">Détails du Stock Capsules vide</h2>
             <p style="color: #6b7280;">Informations complètes et historique des mouvements</p>
         </div>
         <a href="{{ route('stock-capsules.index') }}" style="background: #6b7280; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; font-weight: 500; transition: background 0.2s;">

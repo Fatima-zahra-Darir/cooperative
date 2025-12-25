@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Capsule;
 use App\Models\CapsuleStockMovement;
+use App\Models\FilledCapsule;
 use App\Models\Herb;
 use App\Models\HerbStockMovement;
 use Illuminate\Http\Request;
@@ -146,7 +147,7 @@ class StockCapsuleController extends Controller
         }
 
         // Create capsule stock movement
-        CapsuleStockMovement::create([
+        $capsuleMovement = CapsuleStockMovement::create([
             'capsule_id' => $capsule->id,
             'herb_id' => $request->herb_id,
             'herb_quantity' => $request->herb_quantity,
@@ -165,6 +166,17 @@ class StockCapsuleController extends Controller
             'notes' => 'Utilisation via capsules: ' . $capsule->carton . ' (' . $request->quantity . ' cartons)',
         ]);
 
-        return redirect()->route('stock-capsules.index')->with('success', 'Utilisation enregistrée avec succès. Stock d\'herbe déduit automatiquement.');
+        // Create filled capsule record
+        FilledCapsule::create([
+            'capsule_id' => $capsule->id,
+            'herb_id' => $request->herb_id,
+            'quantity' => $request->quantity,
+            'herb_quantity' => $request->herb_quantity,
+            'filled_date' => $request->movement_date,
+            'capsule_movement_id' => $capsuleMovement->id,
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->route('stock-capsules.index')->with('success', 'Utilisation enregistrée avec succès. Stock d\'herbe déduit automatiquement. Capsules remplies ajoutées au stock rempli.');
     }
 }
