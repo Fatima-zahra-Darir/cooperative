@@ -19,7 +19,7 @@ class StockProduitController extends Controller
     public function index()
     {
         $stocks = ProductStock::with(['product', 'category', 'color', 'size', 'movements'])->get();
-        $fornisseurs = Fornisseur::all();
+        $fornisseurs = Fornisseur::where('specialite', 'embalage')->get();
         return view('stock-produit.index', compact('stocks', 'fornisseurs'));
     }
 
@@ -29,7 +29,7 @@ class StockProduitController extends Controller
     public function create()
     {
         $products = Product::all();
-        $fornisseurs = Fornisseur::all();
+        $fornisseurs = Fornisseur::where('specialite', 'embalage')->get();
         return view('stock-produit.create', compact('products', 'fornisseurs'));
     }
 
@@ -74,6 +74,17 @@ class StockProduitController extends Controller
         
         if ($request->size_id && !$product->sizes->contains('id', $request->size_id)) {
             return back()->withErrors(['size_id' => 'La taille sélectionnée n\'appartient pas à ce produit.'])->withInput();
+        }
+
+        // Check if stock already exists for this product and attributes
+        $existingStock = ProductStock::where('product_id', $request->product_id)
+            ->where('category_id', $request->category_id)
+            ->where('color_id', $request->color_id)
+            ->where('size_id', $request->size_id)
+            ->first();
+
+        if ($existingStock) {
+            return back()->withErrors(['product_id' => 'Ce produit existe déjà dans le stock avec ces attributs. Veuillez utiliser l\'option "Réapprovisionner" pour ajouter du stock.'])->withInput();
         }
 
         $stock = ProductStock::create($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'notes']));

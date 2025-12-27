@@ -37,7 +37,12 @@
 
             <div style="margin-bottom: 2rem;">
                 <label for="specialite" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Spécialité</label>
-                <input type="text" name="specialite" id="specialite" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;" placeholder="ex: Herbes, Emballages, Capsules" value="{{ old('specialite') }}">
+                <select name="specialite" id="specialite" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; background-color: white;">
+                    <option value="">Sélectionnez une spécialité</option>
+                    <option value="embalage" {{ old('specialite') == 'embalage' ? 'selected' : '' }}>Emballage</option>
+                    <option value="capsule" {{ old('specialite') == 'capsule' ? 'selected' : '' }}>Capsule</option>
+                    <option value="herb" {{ old('specialite') == 'herb' ? 'selected' : '' }}>Herbe</option>
+                </select>
                 @error('specialite')
                     <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                 @enderror
