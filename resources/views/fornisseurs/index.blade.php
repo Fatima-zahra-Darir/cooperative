@@ -28,6 +28,7 @@
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Nom</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Téléphone</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Ville</th>
+                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Spécialité</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: right;">Actions</th>
                 </tr>
             </thead>
@@ -37,6 +38,7 @@
                     <td style="padding: 1rem; color: #1f2937; font-weight: 500;">{{ $fornisseur->name }}</td>
                     <td style="padding: 1rem; color: #4b5563;">{{ $fornisseur->phone_number ?? '-' }}</td>
                     <td style="padding: 1rem; color: #4b5563;">{{ $fornisseur->ville ?? '-' }}</td>
+                    <td style="padding: 1rem; color: #4b5563;">{{ $fornisseur->specialite ?? '-' }}</td>
                     <td style="padding: 1rem; text-align: right;">
                         <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
                             <a href="{{ route('fornisseurs.edit', $fornisseur->id) }}" style="color: #4b5563; text-decoration: none; font-size: 0.875rem; padding: 0.25rem 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.25rem;">Modifier</a>
@@ -50,7 +52,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" style="padding: 2rem; text-align: center; color: #9ca3af;">Aucun fournisseur trouvé.</td>
+                    <td colspan="5" style="padding: 2rem; text-align: center; color: #9ca3af;">Aucun fournisseur trouvé.</td>
                 </tr>
                 @endforelse
             </tbody>

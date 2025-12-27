@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CapsuleStockMovement extends Model
 {
-    protected $fillable = ['capsule_id', 'herb_id', 'herb_quantity', 'type', 'quantity', 'movement_date', 'notes'];
+    protected $fillable = ['capsule_id', 'fornisseur_id', 'herb_id', 'herb_quantity', 'type', 'quantity', 'movement_date', 'notes'];
     
     protected $casts = [
         'movement_date' => 'date',
@@ -21,5 +21,10 @@ class CapsuleStockMovement extends Model
     public function herb()
     {
         return $this->belongsTo(Herb::class);
+    }
+
+    public function fornisseur()
+    {
+        return $this->belongsTo(Fornisseur::class);
     }
 }

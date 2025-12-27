@@ -280,6 +280,7 @@
                 <tr style="border-bottom: 1px solid #e5e7eb; text-align: left;">
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Carton</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Quantité de cartons</th>
+                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Fournisseur</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Notes</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: right;">Actions</th>
                 </tr>
@@ -288,6 +289,8 @@
                 @forelse($capsules as $capsule)
                 @php
                     $globalQuantity = $capsule->global_quantity;
+                    // Get the most recent restock movement with supplier
+                    $latestRestock = $capsule->movements()->where('type', 'restock')->with('fornisseur')->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc')->first();
                 @endphp
                 <tr style="border-bottom: 1px solid #f3f4f6;">
                     <td style="padding: 1rem; color: #1f2937; font-weight: 500;">{{ $capsule->carton }}</td>
@@ -295,6 +298,16 @@
                         <span style="background: {{ $globalQuantity > 0 ? '#ecfdf5' : '#fee2e2' }}; color: {{ $globalQuantity > 0 ? '#065f46' : '#991b1b' }}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">
                             {{ $globalQuantity }} cartons
                         </span>
+                    </td>
+                    <td style="padding: 1rem; color: #6b7280;">
+                        @if($latestRestock && $latestRestock->fornisseur)
+                            <span style="font-weight: 500; color: #1f2937;">{{ $latestRestock->fornisseur->name }}</span>
+                            @if($latestRestock->fornisseur->ville)
+                                <span style="color: #6b7280; font-size: 0.875rem;"> - {{ $latestRestock->fornisseur->ville }}</span>
+                            @endif
+                        @else
+                            <span style="color: #9ca3af;">-</span>
+                        @endif
                     </td>
                     <td style="padding: 1rem; color: #4b5563;">{{ $capsule->notes ?? '-' }}</td>
                     <td style="padding: 1rem; text-align: right;">
@@ -334,7 +347,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" style="padding: 2rem; text-align: center; color: #9ca3af;">Aucun stock capsule trouvé.</td>
+                    <td colspan="5" style="padding: 2rem; text-align: center; color: #9ca3af;">Aucun stock capsule trouvé.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -355,6 +368,18 @@
                 <label class="form-label" for="restock_quantity">Quantité</label>
                 <input type="number" id="restock_quantity" name="quantity" class="form-input" min="1" required>
                 @error('quantity')
+                    <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="restock_fornisseur_id">Fournisseur</label>
+                <select id="restock_fornisseur_id" name="fornisseur_id" class="form-input">
+                    <option value="">Sélectionner un fournisseur (optionnel)</option>
+                    @foreach($fornisseurs as $fornisseur)
+                        <option value="{{ $fornisseur->id }}">{{ $fornisseur->name }}@if($fornisseur->ville) - {{ $fornisseur->ville }}@endif</option>
+                    @endforeach
+                </select>
+                @error('fornisseur_id')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
             </div>

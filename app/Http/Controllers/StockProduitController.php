@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Color;
 use App\Models\Size;
 use App\Models\StockMovement;
+use App\Models\Fornisseur;
 use Illuminate\Http\Request;
 
 class StockProduitController extends Controller
@@ -18,7 +19,8 @@ class StockProduitController extends Controller
     public function index()
     {
         $stocks = ProductStock::with(['product', 'category', 'color', 'size', 'movements'])->get();
-        return view('stock-produit.index', compact('stocks'));
+        $fornisseurs = Fornisseur::all();
+        return view('stock-produit.index', compact('stocks', 'fornisseurs'));
     }
 
     /**
@@ -27,7 +29,8 @@ class StockProduitController extends Controller
     public function create()
     {
         $products = Product::all();
-        return view('stock-produit.create', compact('products'));
+        $fornisseurs = Fornisseur::all();
+        return view('stock-produit.create', compact('products', 'fornisseurs'));
     }
 
     /**
@@ -73,7 +76,19 @@ class StockProduitController extends Controller
             return back()->withErrors(['size_id' => 'La taille sélectionnée n\'appartient pas à ce produit.'])->withInput();
         }
 
-        ProductStock::create($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'notes']));
+        $stock = ProductStock::create($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'notes']));
+
+        // Create initial movement if quantity > 0
+        if ($request->quantity > 0) {
+            StockMovement::create([
+                'product_stock_id' => $stock->id,
+                'fornisseur_id' => $request->fornisseur_id,
+                'type' => 'restock',
+                'quantity' => $request->quantity,
+                'movement_date' => now(),
+                'notes' => 'Stock initial',
+            ]);
+        }
 
         return redirect()->route('stock-produit.index')->with('success', 'Stock produit créé avec succès.');
     }
@@ -84,7 +99,7 @@ class StockProduitController extends Controller
     public function show(string $id)
     {
         $stock = ProductStock::with(['product', 'category', 'color', 'size', 'movements' => function($query) {
-            $query->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc');
+            $query->with('fornisseur')->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc');
         }])->findOrFail($id);
         return view('stock-produit.show', compact('stock'));
     }
@@ -155,12 +170,14 @@ class StockProduitController extends Controller
         
         $request->validate([
             'quantity' => 'required|integer|min:1',
+            'fornisseur_id' => 'nullable|exists:fornisseurs,id',
             'movement_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);
 
         StockMovement::create([
             'product_stock_id' => $stock->id,
+            'fornisseur_id' => $request->fornisseur_id,
             'type' => 'restock',
             'quantity' => $request->quantity,
             'movement_date' => $request->movement_date,

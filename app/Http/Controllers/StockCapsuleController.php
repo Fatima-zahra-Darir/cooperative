@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Capsule;
 use App\Models\CapsuleStockMovement;
 use App\Models\FilledCapsule;
+use App\Models\Fornisseur;
 use App\Models\Herb;
 use App\Models\HerbStockMovement;
 use Illuminate\Http\Request;
@@ -18,7 +19,8 @@ class StockCapsuleController extends Controller
     {
         $capsules = Capsule::with('movements')->get();
         $herbs = Herb::all();
-        return view('stock-capsules.index', compact('capsules', 'herbs'));
+        $fornisseurs = Fornisseur::all();
+        return view('stock-capsules.index', compact('capsules', 'herbs', 'fornisseurs'));
     }
 
     /**
@@ -26,7 +28,8 @@ class StockCapsuleController extends Controller
      */
     public function create()
     {
-        return view('stock-capsules.create');
+        $fornisseurs = Fornisseur::all();
+        return view('stock-capsules.create', compact('fornisseurs'));
     }
 
     /**
@@ -37,10 +40,23 @@ class StockCapsuleController extends Controller
         $request->validate([
             'carton' => 'required|string|max:255',
             'quantity' => 'required|integer|min:0',
+            'fornisseur_id' => 'nullable|exists:fornisseurs,id',
             'notes' => 'nullable|string',
         ]);
 
-        Capsule::create($request->only(['carton', 'quantity', 'notes']));
+        $capsule = Capsule::create($request->only(['carton', 'quantity', 'notes']));
+
+        // Create initial movement if quantity > 0
+        if ($request->quantity > 0) {
+            CapsuleStockMovement::create([
+                'capsule_id' => $capsule->id,
+                'fornisseur_id' => $request->fornisseur_id,
+                'type' => 'restock',
+                'quantity' => $request->quantity,
+                'movement_date' => now(),
+                'notes' => 'Stock initial',
+            ]);
+        }
 
         return redirect()->route('stock-capsules.index')->with('success', 'Stock capsule créé avec succès.');
     }
@@ -51,7 +67,7 @@ class StockCapsuleController extends Controller
     public function show(string $id)
     {
         $capsule = Capsule::with(['movements' => function($query) {
-            $query->with('herb')->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc');
+            $query->with(['herb', 'fornisseur'])->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc');
         }])->findOrFail($id);
         return view('stock-capsules.show', compact('capsule'));
     }
@@ -103,12 +119,14 @@ class StockCapsuleController extends Controller
         
         $request->validate([
             'quantity' => 'required|integer|min:1',
+            'fornisseur_id' => 'nullable|exists:fornisseurs,id',
             'movement_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);
 
         CapsuleStockMovement::create([
             'capsule_id' => $capsule->id,
+            'fornisseur_id' => $request->fornisseur_id,
             'type' => 'restock',
             'quantity' => $request->quantity,
             'movement_date' => $request->movement_date,

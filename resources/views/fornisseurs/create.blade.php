@@ -35,6 +35,14 @@
                 @enderror
             </div>
 
+            <div style="margin-bottom: 2rem;">
+                <label for="specialite" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Spécialité</label>
+                <input type="text" name="specialite" id="specialite" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;" placeholder="ex: Herbes, Emballages, Capsules" value="{{ old('specialite') }}">
+                @error('specialite')
+                    <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                @enderror
+            </div>
+
             <div style="display: flex; gap: 1rem; border-top: 1px solid #e5e7eb; padding-top: 1.5rem;">
                 <button type="submit" style="background: #2d7a52; color: white; padding: 0.75rem 2rem; border-radius: 0.5rem; border: none; font-weight: 500; cursor: pointer;">
                     Enregistrer le fournisseur

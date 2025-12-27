@@ -28,6 +28,21 @@
             </div>
 
             <div style="margin-bottom: 1.5rem;">
+                <label for="fornisseur_id" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Fournisseur</label>
+                <select name="fornisseur_id" id="fornisseur_id" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; transition: border-color 0.2s;">
+                    <option value="">Sélectionner un fournisseur (optionnel)</option>
+                    @foreach($fornisseurs as $fornisseur)
+                        <option value="{{ $fornisseur->id }}" {{ old('fornisseur_id') == $fornisseur->id ? 'selected' : '' }}>
+                            {{ $fornisseur->name }}@if($fornisseur->ville) - {{ $fornisseur->ville }}@endif
+                        </option>
+                    @endforeach
+                </select>
+                @error('fornisseur_id')
+                    <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
                 <label for="notes" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Notes (optionnel)</label>
                 <textarea name="notes" id="notes" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; resize: vertical;">{{ old('notes') }}</textarea>
                 @error('notes')
