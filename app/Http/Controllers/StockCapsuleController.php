@@ -44,7 +44,16 @@ class StockCapsuleController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $capsule = Capsule::create($request->only(['carton', 'quantity', 'notes']));
+        // Calculate nombre_capsules: quantity * 125000 (1 carton = 125,000 capsules)
+        $nombreCapsules = $request->quantity * 125000;
+
+        // Create capsule with quantity and nombre_capsules
+        $capsule = Capsule::create([
+            'carton' => $request->carton,
+            'quantity' => $request->quantity,
+            'nombre_capsules' => $nombreCapsules,
+            'notes' => $request->notes,
+        ]);
 
         // Create initial movement if quantity > 0
         if ($request->quantity > 0) {
@@ -90,11 +99,11 @@ class StockCapsuleController extends Controller
         
         $request->validate([
             'carton' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:0',
             'notes' => 'nullable|string',
         ]);
 
-        $capsule->update($request->only(['carton', 'quantity', 'notes']));
+        // Only update carton and notes, not quantity (quantity is managed via movements)
+        $capsule->update($request->only(['carton', 'notes']));
 
         return redirect()->route('stock-capsules.index')->with('success', 'Stock capsule mis à jour avec succès.');
     }
@@ -124,6 +133,12 @@ class StockCapsuleController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        // Add cartons to stock and update nombre_capsules
+        $capsule->quantity += $request->quantity;
+        $capsule->nombre_capsules += ($request->quantity * 125000);
+        $capsule->save();
+
+        // Create restock movement record
         CapsuleStockMovement::create([
             'capsule_id' => $capsule->id,
             'fornisseur_id' => $request->fornisseur_id,
@@ -151,10 +166,13 @@ class StockCapsuleController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        // quantity is now in RANGES (1 range = 420 capsules)
+        $rangeCount = $request->quantity;
+        $capsulesUsed = $rangeCount * 420;
+
         // Check if there's enough capsule stock
-        $globalQuantity = $capsule->global_quantity;
-        if ($request->quantity > $globalQuantity) {
-            return back()->withErrors(['quantity' => 'Quantité insuffisante en stock. Stock disponible: ' . $globalQuantity])->withInput();
+        if ($capsule->nombre_capsules < $capsulesUsed) {
+            return back()->withErrors(['quantity' => 'Quantité insuffisante en stock. Capsules disponibles: ' . $capsule->nombre_capsules . ' (' . floor($capsule->nombre_capsules / 420) . ' rangées)'])->withInput();
         }
 
         // Check if there's enough herb stock
@@ -164,13 +182,20 @@ class StockCapsuleController extends Controller
             return back()->withErrors(['herb_quantity' => 'Quantité d\'herbe insuffisante en stock. Stock disponible: ' . $herbGlobalQuantity])->withInput();
         }
 
+        // Decrease nombre_capsules based on used ranges
+        $capsule->nombre_capsules -= $capsulesUsed;
+        
+        // Recalculate remaining cartons: nombre_cartons = floor(nombre_capsules / 125000)
+        $capsule->quantity = intval(floor($capsule->nombre_capsules / 125000));
+        $capsule->save();
+
         // Create capsule stock movement
         $capsuleMovement = CapsuleStockMovement::create([
             'capsule_id' => $capsule->id,
             'herb_id' => $request->herb_id,
             'herb_quantity' => $request->herb_quantity,
             'type' => 'usage',
-            'quantity' => $request->quantity,
+            'quantity' => $rangeCount, // Store as ranges
             'movement_date' => $request->movement_date,
             'notes' => $request->notes,
         ]);
@@ -181,14 +206,14 @@ class StockCapsuleController extends Controller
             'type' => 'usage',
             'quantity' => $request->herb_quantity,
             'movement_date' => $request->movement_date,
-            'notes' => 'Utilisation via capsules: ' . $capsule->carton . ' (' . $request->quantity . ' cartons)',
+            'notes' => 'Utilisation via capsules: ' . $capsule->carton . ' (' . $rangeCount . ' rangées = ' . $capsulesUsed . ' capsules)',
         ]);
 
         // Create filled capsule record
         FilledCapsule::create([
             'capsule_id' => $capsule->id,
             'herb_id' => $request->herb_id,
-            'quantity' => $request->quantity,
+            'quantity' => $rangeCount, // Store as ranges
             'herb_quantity' => $request->herb_quantity,
             'filled_date' => $request->movement_date,
             'capsule_movement_id' => $capsuleMovement->id,

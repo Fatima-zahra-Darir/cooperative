@@ -280,6 +280,7 @@
                 <tr style="border-bottom: 1px solid #e5e7eb; text-align: left;">
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Carton</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Quantité de cartons</th>
+                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Nombre de capsules</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Fournisseur</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Notes</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: right;">Actions</th>
@@ -295,9 +296,22 @@
                 <tr style="border-bottom: 1px solid #f3f4f6;">
                     <td style="padding: 1rem; color: #1f2937; font-weight: 500;">{{ $capsule->carton }}</td>
                     <td style="padding: 1rem; color: #4b5563;">
-                        <span style="background: {{ $globalQuantity > 0 ? '#ecfdf5' : '#fee2e2' }}; color: {{ $globalQuantity > 0 ? '#065f46' : '#991b1b' }}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">
-                            {{ $globalQuantity }} cartons
-                        </span>
+                        <div style="margin-bottom: 0.5rem;">
+                            <span style="background: {{ $capsule->quantity > 0 ? '#ecfdf5' : '#fee2e2' }}; color: {{ $capsule->quantity > 0 ? '#065f46' : '#991b1b' }}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600; display: inline-block;">
+                                {{ $capsule->quantity }} cartons
+                            </span>
+                        </div>
+                        @php
+                            $isPartial = ($capsule->nombre_capsules % 125000) != 0;
+                        @endphp
+                        @if($isPartial)
+                            <div style="color: #f59e0b; font-size: 0.75rem; font-style: italic; margin-top: 0.25rem; display: block;">
+                                📦 1 carton en cours d'utilisation
+                            </div>
+                        @endif
+                    </td>
+                    <td style="padding: 1rem; color: #1f2937; font-weight: 600; font-size: 0.95rem;">
+                        {{ number_format($capsule->nombre_capsules, 0, ',', ' ') }}
                     </td>
                     <td style="padding: 1rem; color: #6b7280;">
                         @if($latestRestock && $latestRestock->fornisseur)
@@ -323,7 +337,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>
                             </button>
-                            <button onclick="openUsageModal({{ $capsule->id }}, {{ $globalQuantity }})" class="btn-icon btn-icon-usage tooltip" data-tooltip="Utilisation">
+                            <button onclick="openUsageModal({{ $capsule->id }}, {{ $capsule->nombre_capsules }})" class="btn-icon btn-icon-usage tooltip" data-tooltip="Utilisation">
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
                                 </svg>
@@ -411,14 +425,33 @@
         </div>
         <form id="usageForm" method="POST">
             @csrf
+            <!-- Information Box -->
+            <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 0.75rem 1rem; margin-bottom: 1.5rem; border-radius: 0.375rem; font-size: 0.875rem; color: #1e40af;">
+                <strong>📌 Informations:</strong> 1 carton = 125,000 capsules | 1 rangée = 420 capsules
+            </div>
+
             <div class="form-group">
-                <label class="form-label" for="usage_quantity">Quantité utilisée</label>
+                <label class="form-label" for="usage_quantity">Quantité utilisée (rangées)</label>
                 <input type="number" id="usage_quantity" name="quantity" class="form-input" min="1" required>
-                <small style="color: #6b7280; font-size: 0.75rem; display: block; margin-top: 0.25rem;">Stock disponible: <span id="available_quantity">0</span> cartons</small>
+                <small style="color: #6b7280; font-size: 0.75rem; display: block; margin-top: 0.25rem;">Nombre de rangées à utiliser</small>
                 @error('quantity')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
             </div>
+
+            <!-- Live Calculation Display -->
+            <div style="background-color: #f3f4f6; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem; border: 1px solid #e5e7eb;">
+                <div style="font-size: 0.875rem; color: #374151; margin-bottom: 0.75rem;">
+                    <strong>Calcul en temps réel:</strong>
+                </div>
+                <div style="font-size: 0.813rem; color: #4b5563; line-height: 1.6;">
+                    <div>Capsules utilisées: <strong id="calc_capsules_used">0</strong> capsules</div>
+                    <div style="color: #6b7280; margin-top: 0.5rem;">Nombre de capsules restantes: <strong id="calc_remaining_capsules" style="color: #059669;">0</strong></div>
+                    <div style="color: #6b7280; margin-top: 0.25rem;">Nombre de cartons restants: <strong id="calc_remaining_cartons" style="color: #059669;">0</strong> cartons</div>
+                    <div style="color: #6b7280; margin-top: 0.25rem; font-style: italic;">Statut: <strong id="calc_status" style="color: #059669;">-</strong></div>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label class="form-label" for="usage_herb_id">Herbe utilisée <span style="color: #ef4444;">*</span></label>
                 <select id="usage_herb_id" name="herb_id" class="form-input" required>
@@ -441,7 +474,7 @@
                 @enderror
             </div>
             <div class="form-group">
-                <label class="form-label" for="usage_date">Date d'ouverture</label>
+                <label class="form-label" for="usage_date">Date d'utilisation</label>
                 <input type="date" id="usage_date" name="movement_date" class="form-input" value="{{ date('Y-m-d') }}" required>
                 @error('movement_date')
                     <div class="error-message">{{ $message }}</div>
@@ -462,6 +495,13 @@
 
 @push('scripts')
 <script>
+    // Store current capsule data for calculations
+    let currentCapsuleData = {
+        id: null,
+        nombreCapsules: 0,
+        nombreCartons: 0
+    };
+
     function openRestockModal(capsuleId) {
         const modal = document.getElementById('restockModal');
         const form = document.getElementById('restockForm');
@@ -476,12 +516,23 @@
         form.reset();
     }
 
-    function openUsageModal(capsuleId, availableQuantity) {
+    function openUsageModal(capsuleId, numberOfCapsules) {
         const modal = document.getElementById('usageModal');
         const form = document.getElementById('usageForm');
-        const availableQuantitySpan = document.getElementById('available_quantity');
+        
+        // Store current capsule data for calculations
+        currentCapsuleData = {
+            id: capsuleId,
+            nombreCapsules: numberOfCapsules,
+            nombreCartons: Math.floor(numberOfCapsules / 125000)
+        };
+
         form.action = '{{ route("stock-capsules.usage", ":id") }}'.replace(':id', capsuleId);
-        availableQuantitySpan.textContent = availableQuantity;
+        
+        // Reset form and calculations
+        form.reset();
+        resetCalculations();
+        
         modal.classList.add('active');
     }
 
@@ -490,14 +541,53 @@
         modal.classList.remove('active');
         const form = document.getElementById('usageForm');
         form.reset();
+        resetCalculations();
         // Reset herb stock display
         document.getElementById('available_herb_quantity').textContent = '-';
+    }
+
+    function resetCalculations() {
+        document.getElementById('calc_capsules_used').textContent = '0';
+        document.getElementById('calc_remaining_capsules').textContent = '0';
+        document.getElementById('calc_remaining_cartons').textContent = '0';
+        document.getElementById('calc_status').textContent = '-';
+    }
+
+    function updateCalculations() {
+        const rangesInput = document.getElementById('usage_quantity');
+        const ranges = parseInt(rangesInput.value) || 0;
+
+        // Constants: 1 range = 420 capsules, 1 carton = 125,000 capsules
+        const CAPSULES_PER_RANGE = 420;
+        const CAPSULES_PER_CARTON = 125000;
+
+        // Calculate capsules used
+        const capsulesUsed = ranges * CAPSULES_PER_RANGE;
+        
+        // Calculate remaining capsules
+        const remainingCapsules = currentCapsuleData.nombreCapsules - capsulesUsed;
+        
+        // Calculate remaining cartons
+        const remainingCartons = Math.floor(remainingCapsules / CAPSULES_PER_CARTON);
+        
+        // Determine status
+        let status = remainingCartons;
+        if (remainingCapsules > 0 && remainingCapsules < CAPSULES_PER_CARTON) {
+            status = 'Carton ouvert';
+        }
+
+        // Update display
+        document.getElementById('calc_capsules_used').textContent = capsulesUsed.toLocaleString('fr-FR');
+        document.getElementById('calc_remaining_capsules').textContent = Math.max(0, remainingCapsules).toLocaleString('fr-FR');
+        document.getElementById('calc_remaining_cartons').textContent = Math.max(0, remainingCartons);
+        document.getElementById('calc_status').textContent = remainingCapsules < 0 ? '⚠️ Quantité insuffisante' : status;
     }
 
     // Update herb stock when herb is selected
     document.addEventListener('DOMContentLoaded', function() {
         const herbSelect = document.getElementById('usage_herb_id');
         const herbStockSpan = document.getElementById('available_herb_quantity');
+        const usageQuantityInput = document.getElementById('usage_quantity');
         
         if (herbSelect && herbStockSpan) {
             herbSelect.addEventListener('change', function() {
@@ -509,6 +599,11 @@
                     herbStockSpan.textContent = '-';
                 }
             });
+        }
+
+        // Add event listener for range quantity input to update calculations in real-time
+        if (usageQuantityInput) {
+            usageQuantityInput.addEventListener('input', updateCalculations);
         }
     });
 

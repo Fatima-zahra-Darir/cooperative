@@ -21,19 +21,17 @@
             </div>
 
             <div style="margin-bottom: 1.5rem;">
-                <label for="quantity" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Quantité de cartons</label>
-                <input type="number" name="quantity" id="quantity" required min="0" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;" placeholder="0" value="{{ old('quantity', $capsule->quantity) }}">
-                @error('quantity')
-                    <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div style="margin-bottom: 1.5rem;">
                 <label for="notes" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Notes (optionnel)</label>
                 <textarea name="notes" id="notes" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; resize: vertical;">{{ old('notes', $capsule->notes) }}</textarea>
                 @error('notes')
                     <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                 @enderror
+            </div>
+
+            <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem;">
+                <p style="font-size: 0.875rem; color: #6b7280;">
+                    <strong>Note:</strong> Pour modifier la quantité, utilisez les boutons "Réapprovisionner" ou "Utiliser" dans la liste des stocks.
+                </p>
             </div>
 
             <div style="display: flex; gap: 1rem; border-top: 1px solid #e5e7eb; padding-top: 1.5rem;">
