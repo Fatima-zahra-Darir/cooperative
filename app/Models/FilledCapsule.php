@@ -21,6 +21,14 @@ class FilledCapsule extends Model
         'herb_quantity' => 'decimal:2',
     ];
 
+    /**
+     * Get the number of capsules used (rangées × 420)
+     */
+    public function getCapsulesUsedAttribute()
+    {
+        return $this->quantity * 420;
+    }
+
     public function capsule()
     {
         return $this->belongsTo(Capsule::class);

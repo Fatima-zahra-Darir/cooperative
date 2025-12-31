@@ -67,7 +67,7 @@
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <div>
             <h2 style="font-size: 1.5rem; font-weight: 600; color: #1f2937;">Stock Capsules remplie</h2>
-            <p style="color: #6b7280;">Gestion du stock des capsules remplies par carton.</p>
+            <p style="color: #6b7280;">Gestion du stock des capsules remplies par rangée (1 rangée = 420 capsules).</p>
         </div>
     </div>
 
@@ -83,8 +83,8 @@
                 <tr style="border-bottom: 1px solid #e5e7eb; text-align: left;">
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Carton d'origine</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Herbe utilisée</th>
-                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Quantité de cartons remplis</th>
-                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Quantité d'herbe utilisée</th>
+                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Quantité de rangées remplies</th>
+                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Quantité de capsules utilisée</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Date de remplissage</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Notes</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: right;">Actions</th>
@@ -103,11 +103,13 @@
                     </td>
                     <td style="padding: 1rem; color: #4b5563;">
                         <span style="background: #ecfdf5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">
-                            {{ $filledCapsule->quantity }} cartons
+                            {{ $filledCapsule->quantity }} rangées
                         </span>
                     </td>
                     <td style="padding: 1rem; color: #4b5563;">
-                        <span style="font-weight: 500;">{{ number_format($filledCapsule->herb_quantity, 2) }}</span>
+                        <span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">
+                            {{ number_format($filledCapsule->capsules_used, 0) }} capsules
+                        </span>
                     </td>
                     <td style="padding: 1rem; color: #4b5563;">{{ $filledCapsule->filled_date->format('d/m/Y') }}</td>
                     <td style="padding: 1rem; color: #4b5563;">{{ $filledCapsule->notes ?? '-' }}</td>

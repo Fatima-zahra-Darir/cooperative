@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('capsule_id')->constrained('capsules')->onDelete('cascade');
             $table->foreignId('herb_id')->constrained('herbs')->onDelete('cascade');
-            $table->integer('quantity'); // Quantity of filled cartons
+            $table->integer('quantity'); // Quantity of filled rangées (1 rangée = 420 capsules)
             $table->decimal('herb_quantity', 10, 2); // Quantity of herb used
             $table->date('filled_date'); // Date when capsules were filled
             $table->foreignId('capsule_movement_id')->nullable()->constrained('capsule_stock_movements')->onDelete('set null'); // Reference to the original usage movement

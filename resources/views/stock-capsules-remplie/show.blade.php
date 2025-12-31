@@ -34,16 +34,20 @@
                 @endif
             </div>
             <div>
-                <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">Quantité de cartons remplis</label>
+                <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">Quantité de rangées remplies</label>
                 <p style="font-size: 1rem; color: #1f2937; font-weight: 600;">
                     <span style="background: #ecfdf5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem;">
-                        {{ $filledCapsule->quantity }} cartons
+                        {{ $filledCapsule->quantity }} rangées
                     </span>
                 </p>
             </div>
             <div>
-                <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">Quantité d'herbe utilisée</label>
-                <p style="font-size: 1rem; color: #1f2937; font-weight: 500;">{{ number_format($filledCapsule->herb_quantity, 2) }}</p>
+                <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">Quantité de capsules utilisée</label>
+                <p style="font-size: 1rem; color: #1f2937; font-weight: 600;">
+                    <span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem;">
+                        {{ number_format($filledCapsule->capsules_used, 0) }} capsules
+                    </span>
+                </p>
             </div>
             <div>
                 <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">Date de remplissage</label>
