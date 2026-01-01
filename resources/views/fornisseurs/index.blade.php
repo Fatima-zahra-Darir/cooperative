@@ -4,7 +4,7 @@
 @section('page-title', 'Fournisseurs')
 
 @section('content')
-<div style="background: white; border-radius: 0.75rem; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <div style="background: white; border-radius: 0.75rem; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <div>
             <h2 style="font-size: 1.5rem; font-weight: 600; color: #1f2937;">Fournisseurs</h2>
@@ -18,6 +18,16 @@
     @if(session('success'))
         <div style="background: #ecfdf5; color: #065f46; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
             {{ session('success') }}
+        </div>
+    @endif
+
+    @if($search)
+        <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: #ecfdf5; color: #065f46; padding: 0.5rem 0.75rem; border-radius: 999px; font-size: 0.875rem;">
+                <span style="font-weight: 600;">Filtre :</span>
+                <span>{{ $search }}</span>
+            </div>
+            <a href="{{ route('fornisseurs.index') }}" style="color: #4b5563; font-size: 0.875rem; text-decoration: underline;">Réinitialiser</a>
         </div>
     @endif
 
@@ -38,7 +48,27 @@
                     <td style="padding: 1rem; color: #1f2937; font-weight: 500;">{{ $fornisseur->name }}</td>
                     <td style="padding: 1rem; color: #4b5563;">{{ $fornisseur->phone_number ?? '-' }}</td>
                     <td style="padding: 1rem; color: #4b5563;">{{ $fornisseur->ville ?? '-' }}</td>
-                    <td style="padding: 1rem; color: #4b5563;">{{ $fornisseur->specialite ?? '-' }}</td>
+                    <td style="padding: 1rem;">
+                        @php
+                            $iconMap = [
+                                'embalage' => '📦',
+                                'capsule' => '💊',
+                                'herb' => '🌿',
+                            ];
+                        @endphp
+                        @if($fornisseur->specialites->isEmpty())
+                            <span style="color: #9ca3af;">-</span>
+                        @else
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                @foreach($fornisseur->specialites as $spec)
+                                    <span style="display: inline-block; background: #ecf5f1; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">
+                                        {{ $iconMap[$spec->specialite] ?? '' }}
+                                        {{ ucfirst($spec->specialite) }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        @endif
+                    </td>
                     <td style="padding: 1rem; text-align: right;">
                         <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
                             <a href="{{ route('fornisseurs.edit', $fornisseur->id) }}" style="color: #4b5563; text-decoration: none; font-size: 0.875rem; padding: 0.25rem 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.25rem;">Modifier</a>

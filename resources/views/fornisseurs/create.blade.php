@@ -36,15 +36,28 @@
             </div>
 
             <div style="margin-bottom: 2rem;">
-                <label for="specialite" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Spécialité</label>
-                <select name="specialite" id="specialite" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; background-color: white;">
-                    <option value="">Sélectionnez une spécialité</option>
-                    <option value="embalage" {{ old('specialite') == 'embalage' ? 'selected' : '' }}>Emballage</option>
-                    <option value="capsule" {{ old('specialite') == 'capsule' ? 'selected' : '' }}>Capsule</option>
-                    <option value="herb" {{ old('specialite') == 'herb' ? 'selected' : '' }}>Herbe</option>
-                </select>
-                @error('specialite')
-                    <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.75rem;">Spécialité</label>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem;">
+                    @php
+                        $specialitesOptions = [
+                            ['value' => 'embalage', 'label' => 'Emballage', 'icon' => '📦'],
+                            ['value' => 'capsule', 'label' => 'Capsule', 'icon' => '💊'],
+                            ['value' => 'herb', 'label' => 'Herbe', 'icon' => '🌿'],
+                        ];
+                        $selectedSpecialites = (array)old('specialites', []);
+                    @endphp
+                    @foreach($specialitesOptions as $option)
+                        <label style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; background-color: {{ in_array($option['value'], $selectedSpecialites) ? '#ecf5f1' : 'white' }}; border-color: {{ in_array($option['value'], $selectedSpecialites) ? '#2d7a52' : '#e5e7eb' }};" onchange="this.style.borderColor = this.querySelector('input').checked ? '#2d7a52' : '#e5e7eb'; this.style.backgroundColor = this.querySelector('input').checked ? '#ecf5f1' : 'white';">
+                            <input type="checkbox" name="specialites[]" value="{{ $option['value'] }}" {{ in_array($option['value'], $selectedSpecialites) ? 'checked' : '' }} style="width: 18px; height: 18px; cursor: pointer; accent-color: #2d7a52;">
+                            <span style="flex: 1; font-size: 0.875rem; color: #374151; font-weight: 500;">{{ $option['icon'] }} {{ $option['label'] }}</span>
+                        </label>
+                    @endforeach
+                </div>
+                @error('specialites')
+                    <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.5rem;">{{ $message }}</p>
+                @enderror
+                @error('specialites.*')
+                    <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.5rem;">{{ $message }}</p>
                 @enderror
             </div>
 

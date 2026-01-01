@@ -9,7 +9,7 @@ class Fornisseur extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'phone_number', 'ville', 'specialite'];
+    protected $fillable = ['name', 'phone_number', 'ville'];
 
     public function herbStockMovements()
     {
@@ -24,5 +24,10 @@ class Fornisseur extends Model
     public function stockMovements()
     {
         return $this->hasMany(StockMovement::class);
+    }
+
+    public function specialites()
+    {
+        return $this->hasMany(FornisseurSpecialite::class);
     }
 }
