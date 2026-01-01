@@ -19,7 +19,9 @@ class StockProduitController extends Controller
     public function index()
     {
         $stocks = ProductStock::with(['product', 'category', 'color', 'size', 'movements'])->get();
-        $fornisseurs = Fornisseur::where('specialite', 'embalage')->get();
+        $fornisseurs = Fornisseur::whereHas('specialites', function ($query) {
+            $query->where('specialite', 'embalage');
+        })->get();
         return view('stock-produit.index', compact('stocks', 'fornisseurs'));
     }
 
@@ -29,7 +31,9 @@ class StockProduitController extends Controller
     public function create()
     {
         $products = Product::all();
-        $fornisseurs = Fornisseur::where('specialite', 'embalage')->get();
+        $fornisseurs = Fornisseur::whereHas('specialites', function ($query) {
+            $query->where('specialite', 'embalage');
+        })->get();
         return view('stock-produit.create', compact('products', 'fornisseurs'));
     }
 

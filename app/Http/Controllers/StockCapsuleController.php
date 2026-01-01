@@ -19,7 +19,9 @@ class StockCapsuleController extends Controller
     {
         $capsules = Capsule::with('movements')->get();
         $herbs = Herb::all();
-        $fornisseurs = Fornisseur::where('specialite', 'capsule')->get();
+        $fornisseurs = Fornisseur::whereHas('specialites', function ($query) {
+            $query->where('specialite', 'capsule');
+        })->get();
         return view('stock-capsules.index', compact('capsules', 'herbs', 'fornisseurs'));
     }
 
@@ -28,7 +30,9 @@ class StockCapsuleController extends Controller
      */
     public function create()
     {
-        $fornisseurs = Fornisseur::where('specialite', 'capsule')->get();
+        $fornisseurs = Fornisseur::whereHas('specialites', function ($query) {
+            $query->where('specialite', 'capsule');
+        })->get();
         return view('stock-capsules.create', compact('fornisseurs'));
     }
 
