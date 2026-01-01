@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'type_emballage'];
+
+    protected $casts = [
+        'type_emballage' => 'string',
+    ];
 
     public function categories()
     {
@@ -25,6 +29,24 @@ class Product extends Model
 
     public function stock()
     {
-        return $this->hasOne(ProductStock::class);
+        return $this->hasMany(ProductStock::class);
+    }
+
+    // Check if this is packaging (has type_emballage)
+    public function isEmballage()
+    {
+        return !is_null($this->type_emballage);
+    }
+
+    // Get type of emballage
+    public function getTypeEmballageLabel()
+    {
+        $types = [
+            'PILULIER' => '📦 Pilulier',
+            'BOUCHON' => '🔓 Bouchon',
+        ];
+        
+        return $types[$this->type_emballage] ?? $this->type_emballage;
     }
 }
+

@@ -24,6 +24,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'type_emballage' => 'nullable|in:PILULIER,BOUCHON',
             'categories' => 'required|array',
             'categories.*' => 'exists:categories,id',
             'colors' => 'required|array',
@@ -32,7 +33,7 @@ class ProductController extends Controller
             'sizes.*' => 'exists:sizes,id',
         ]);
 
-        $product = \App\Models\Product::create($request->only('name'));
+        $product = \App\Models\Product::create($request->only('name', 'type_emballage'));
         $product->categories()->sync($request->categories);
         $product->colors()->sync($request->colors);
         $product->sizes()->sync($request->sizes);
@@ -54,6 +55,7 @@ class ProductController extends Controller
         $product = \App\Models\Product::findOrFail($id);
         $request->validate([
             'name' => 'required|string|max:255',
+            'type_emballage' => 'nullable|in:PILULIER,BOUCHON',
             'categories' => 'required|array',
             'categories.*' => 'exists:categories,id',
             'colors' => 'required|array',
@@ -62,7 +64,7 @@ class ProductController extends Controller
             'sizes.*' => 'exists:sizes,id',
         ]);
 
-        $product->update($request->only('name'));
+        $product->update($request->only('name', 'type_emballage'));
         $product->categories()->sync($request->categories);
         $product->colors()->sync($request->colors);
         $product->sizes()->sync($request->sizes);

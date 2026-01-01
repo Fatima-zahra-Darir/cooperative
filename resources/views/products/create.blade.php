@@ -19,6 +19,19 @@
                 @enderror
             </div>
 
+            <div style="margin-bottom: 1.5rem;">
+                <label for="type_emballage" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Type d'Emballage (optionnel)</label>
+                <select name="type_emballage" id="type_emballage" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;">
+                    <option value="">- Non spécifié -</option>
+                    <option value="PILULIER" {{ old('type_emballage') == 'PILULIER' ? 'selected' : '' }}>📦 Pilulier</option>
+                    <option value="BOUCHON" {{ old('type_emballage') == 'BOUCHON' ? 'selected' : '' }}>🔓 Bouchon</option>
+                </select>
+                @error('type_emballage')
+                    <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                @enderror
+                <p style="color: #6b7280; font-size: 0.75rem; margin-top: 0.25rem;">Sélectionnez le type si ce produit est un emballage</p>
+            </div>
+
             <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 2rem;">
                 <!-- Catégories -->
                 <div class="field-container">
